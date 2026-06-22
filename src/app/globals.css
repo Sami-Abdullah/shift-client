@@ -1,26 +1,79 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* Brand System Extensions from image_146be1.png */
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-tertiary: var(--brand-tertiary);
+  --color-brand-neutral: var(--brand-neutral);
+
+  /* Font System Architecture */
+  --font-serif: "Bodoni Moda", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  /* Standard Shadcn Component Mapping */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-serif);
+  
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  /* Architectural Noir Color Space Values */
+  --brand-primary: #D9D9D9;
+  --brand-secondary: #F2F2F2;
+  --brand-tertiary: #E1D7D5;
+  --brand-neutral: #0D0D0D;
+
+  /* Default Workspace State (Dark Layout Mapping based on image_146085.jpg) */
+  --background: #0D0D0D; 
+  --foreground: #F2F2F2;
+  
+  --card: #0D0D0D;
+  --card-foreground: #D9D9D9;
+  --popover: #0D0D0D;
+  --popover-foreground: #D9D9D9;
+  
+  --primary: #D9D9D9;
+  --primary-foreground: #0D0D0D;
+  --secondary: #F2F2F2;
+  --secondary-foreground: #0D0D0D;
+  
+  --muted: #1A1A1A;
+  --muted-foreground: #E1D7D5;
+  --accent: #1A1A1A;
+  --accent-foreground: #F2F2F2;
+  
+  --border: rgba(217, 217, 217, 0.1);
+  --input: rgba(217, 217, 217, 0.15);
+  --ring: #D9D9D9;
+  --radius: 0rem; /* Strict crisp edges matching editorial layout */
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-brand-neutral text-brand-secondary font-sans antialiased;
+  }
+  h1, h2, h3, .font-serif {
+    @apply font-serif;
+  }
 }
