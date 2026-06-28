@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Search, ShoppingBag } from 'lucide-react';
 
-export default function GlobalNavbar() {
+export default function Navbar() {
   const pathname = usePathname();
 
   // Helper function to check if link matches the current view path
@@ -26,7 +26,7 @@ export default function GlobalNavbar() {
       {/* Brand Identity */}
       <div className="flex items-center">
         <Link href="/" className="text-sm font-medium tracking-[0.25em] uppercase text-brand-secondary font-serif">
-          Shift
+          FERRUM
         </Link>
       </div>
 

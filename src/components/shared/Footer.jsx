@@ -9,7 +9,7 @@ export default function Footer() {
         
         {/* Large Centered Serif Logo */}
         <h3 className="text-2xl font-normal tracking-[0.2em] uppercase font-serif text-brand-secondary">
-          Shift
+          FERRUM
         </h3>
 
         {/* Navigation Core Matrix */}

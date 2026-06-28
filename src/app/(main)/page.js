@@ -1,9 +1,10 @@
 import React from 'react';
-import GlobalNavbar from '@/components/shared/Navbar';
-import Hero from '@/components/home/Hero';
-import Ethos from '@/components/home/Ethos';
-import FeaturedPieces from '@/components/home/FeaturedPieces';
-import GlobalFooter from '@/components/shared/Footer';
+
+import Hero from '@/components/main/home/Hero';
+import Ethos from '@/components/main/home/Ethos';
+import FeaturedPieces from '@/components/main/home/FeaturedPieces';
+
+import ConstructionBanner from '@/components/main/home/ConstructionBanner';
 
 export default function HomePage() {
   return (
@@ -12,6 +13,7 @@ export default function HomePage() {
         <main>
           <Hero />
           <Ethos />
+          <ConstructionBanner/>
           <FeaturedPieces />
         </main>
       </div>
