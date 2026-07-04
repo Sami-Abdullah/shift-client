@@ -7,16 +7,20 @@ import { useForm } from 'react-hook-form';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
   CardTitle,
   CardFooter
 } from "@/components/ui/card";
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
+import { authClient } from '@/lib/auth-client';
 
 export default function SignUpPage() {
+  const router = useRouter()
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
       fullname: "",
@@ -25,23 +29,34 @@ export default function SignUpPage() {
     }
   });
 
-  const onSubmit = (data) => {
-    console.log("Account Initialization Sequence:", data);
+  const onSubmit = async (data) => {
+    console.log(data);
+
+    const { data:res, error } = await authClient.signUp.email({
+      email:data.email, // user email address
+      password:data.password, // user password -> min 8 characters by default
+      name:data.fullname, // user display name
+    },);
+    console.log(res);
+    if (res){
+      toast('You have signed In')
+      router.push('/signin')
+    }
   };
 
   return (
     <main className="min-h-screen w-full bg-brand-neutral grid grid-cols-1 md:grid-cols-2">
       {/* Left Column: Visual Media Framing */}
       <div className="relative hidden md:flex flex-col justify-between p-12 overflow-hidden border-r border-white/5 grayscale">
-        <Image 
-          src="/images/signup.jpg" 
-          alt="Ferrum Atelier Space" 
+        <Image
+          src="/images/signup.jpg"
+          alt="Ferrum Atelier Space"
           fill
           priority
           className="object-cover object-center"
         />
         <div className="absolute inset-0 bg-black/10" />
-        
+
         <div className="relative z-10 max-w-sm mt-auto space-y-4">
           <span className="text-[9px] uppercase tracking-[0.3em] text-brand-primary/40 block">
             The Atelier
@@ -81,10 +96,10 @@ export default function SignUpPage() {
                 <Label htmlFor="fullname" className="text-[9px] uppercase tracking-[0.25em] text-brand-primary/40 font-medium">
                   Full Name
                 </Label>
-                <Input 
+                <Input
                   id="fullname"
-                  type="text" 
-                  className="rounded-none bg-transparent border-0 border-b border-white/10 text-xs text-brand-secondary placeholder:text-brand-primary/20 focus-visible:ring-0 focus-visible:border-brand-secondary px-0 py-2 h-auto uppercase tracking-wider transition-colors"
+                  type="text"
+                  className="rounded-none bg-transparent border-0 border-b border-white/10 text-xs text-brand-secondary placeholder:text-brand-primary/20 focus-visible:ring-0 focus-visible:border-brand-secondary px-0 py-2 h-auto  tracking-wider transition-colors"
                   placeholder="ALEXANDER VOGEL"
                   {...register("fullname", { required: "Name configuration required" })}
                 />
@@ -95,10 +110,10 @@ export default function SignUpPage() {
                 <Label htmlFor="email" className="text-[9px] uppercase tracking-[0.25em] text-brand-primary/40 font-medium">
                   Email Address
                 </Label>
-                <Input 
+                <Input
                   id="email"
-                  type="email" 
-                  className="rounded-none bg-transparent border-0 border-b border-white/10 text-xs text-brand-secondary placeholder:text-brand-primary/20 focus-visible:ring-0 focus-visible:border-brand-secondary px-0 py-2 h-auto uppercase tracking-wider transition-colors"
+                  type="email"
+                  className="rounded-none bg-transparent border-0 border-b border-white/10 text-xs text-brand-secondary placeholder:text-brand-primary/20 focus-visible:ring-0 focus-visible:border-brand-secondary px-0 py-2 h-auto  tracking-wider transition-colors"
                   placeholder="ARCHITECT@FERRUM.COM"
                   {...register("email", { required: "Email path destination required" })}
                 />
@@ -109,12 +124,12 @@ export default function SignUpPage() {
                 <Label htmlFor="password" className="text-[9px] uppercase tracking-[0.25em] text-brand-primary/40 font-medium">
                   Password
                 </Label>
-                <Input 
+                <Input
                   id="password"
-                  type="password" 
+                  type="password"
                   className="rounded-none bg-transparent border-0 border-b border-white/10 text-xs text-brand-secondary placeholder:text-brand-primary/20 focus-visible:ring-0 focus-visible:border-brand-secondary px-0 py-2 h-auto tracking-widest transition-colors"
                   placeholder="••••••••••••"
-                  {...register("password", { 
+                  {...register("password", {
                     required: "Security signature code required",
                     minLength: { value: 8, message: "Minimum 8 character baseline parameter required" }
                   })}

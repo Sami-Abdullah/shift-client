@@ -15,8 +15,14 @@ import {
   CardTitle,
   CardFooter
 } from "@/components/ui/card";
+import { toast } from 'react-toastify';
+
+import { authClient } from '@/lib/auth-client';
+import { useRouter } from 'next/navigation';
 
 export default function SignInPage() {
+
+  const router = useRouter();
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
       email: "",
@@ -24,8 +30,20 @@ export default function SignInPage() {
     }
   });
 
-  const onSubmit = (data) => {
-    console.log("Sign In Data:", data);
+  const onSubmit = async(data) => {
+    const { data:res, error } = await authClient.signIn.email({
+        email:data.email,
+        password:data.password,
+},)
+
+  if(res){
+    toast('you signed in')
+    router.push('/')
+    router.refresh()
+  }
+  else{
+    toast.error(`${error}`)
+  }
   };
 
   return (
@@ -41,12 +59,12 @@ export default function SignInPage() {
         />
         <div className="absolute inset-0 bg-black/10" />
         
-        <span className="relative z-10 text-[10px] uppercase tracking-[0.3em] text-brand-secondary/60">
+        <span className="relative z-10 text-[10px]  tracking-[0.3em] text-brand-secondary/60">
           Established MMXXIV
         </span>
 
         <div className="relative z-10 mt-auto max-w-lg">
-          <h2 className="text-5xl lg:text-6xl font-normal tracking-tight text-brand-secondary uppercase leading-[0.95] font-serif">
+          <h2 className="text-5xl lg:text-6xl font-normal tracking-tight text-brand-secondary  leading-[0.95] font-serif">
             Structure <br />
             D <br />
             Elegance.
@@ -72,13 +90,13 @@ export default function SignInPage() {
           <CardContent className="p-0">
             <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
               <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-[9px] uppercase tracking-[0.25em] text-brand-primary/40 font-medium">
+                <Label htmlFor="email" className="text-[9px]  tracking-[0.25em] text-brand-primary/40 font-medium">
                   Email Address
                 </Label>
                 <Input 
                   id="email"
                   type="email" 
-                  className="rounded-none bg-transparent border-0 border-b border-white/10 text-xs text-brand-secondary placeholder:text-brand-primary/20 focus-visible:ring-0 focus-visible:border-brand-secondary px-0 py-2 h-auto uppercase tracking-wider transition-colors"
+                  className="rounded-none bg-transparent border-0 border-b border-white/10 text-xs text-brand-secondary placeholder:text-brand-primary/20 focus-visible:ring-0 focus-visible:border-brand-secondary px-0 py-2 h-auto  tracking-wider transition-colors"
                   placeholder="NAME@SHIFT.COM"
                   {...register("email", { required: "Email is required" })}
                 />
@@ -87,10 +105,10 @@ export default function SignInPage() {
               
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center">
-                  <Label htmlFor="password" className="text-[9px] uppercase tracking-[0.25em] text-brand-primary/40 font-medium">
+                  <Label htmlFor="password" className="text-[9px]  tracking-[0.25em] text-brand-primary/40 font-medium">
                     Password
                   </Label>
-                  <Link href="#" className="text-[9px] uppercase tracking-widest text-brand-primary/40 hover:text-brand-secondary transition-colors">
+                  <Link href="#" className="text-[9px]  tracking-widest text-brand-primary/40 hover:text-brand-secondary transition-colors">
                     Forgot?
                   </Link>
                 </div>
@@ -104,7 +122,7 @@ export default function SignInPage() {
                 {errors.password && <p className="text-[10px] text-red-400 tracking-wide">{errors.password.message}</p>}
               </div>
 
-              <Button type="submit" variant="secondary" className="w-full rounded-none bg-brand-secondary text-brand-neutral font-medium text-[10px] uppercase tracking-[0.25em] py-6 hover:bg-brand-primary transition-colors cursor-pointer">
+              <Button type="submit" variant="secondary" className="w-full rounded-none bg-brand-secondary text-brand-neutral font-medium text-[10px]  tracking-[0.25em] py-6 hover:bg-brand-primary transition-colors cursor-pointer">
                 Authentication
               </Button>
             </form>
@@ -112,16 +130,16 @@ export default function SignInPage() {
             <div className="space-y-4 mt-8">
               <div className="relative flex items-center justify-center">
                 <div className="absolute w-full border-t border-white/5" />
-                <span className="relative bg-brand-neutral px-3 text-[8px] uppercase tracking-[0.3em] text-brand-primary/30">
+                <span className="relative bg-brand-neutral px-3 text-[8px]  tracking-[0.3em] text-brand-primary/30">
                   Or continue with
                 </span>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <Button variant="outline" className="rounded-none border-white/10 text-brand-secondary text-[9px] uppercase tracking-[0.2em] bg-transparent hover:bg-white/5 py-5 transition-colors cursor-pointer">
+                <Button variant="outline" className="rounded-none border-white/10 text-brand-secondary text-[9px]  tracking-[0.2em] bg-transparent hover:bg-white/5 py-5 transition-colors cursor-pointer">
                   Identity
                 </Button>
-                <Button variant="outline" className="rounded-none border-white/10 text-brand-secondary text-[9px] uppercase tracking-[0.2em] bg-transparent hover:bg-white/5 py-5 transition-colors cursor-pointer">
+                <Button variant="outline" className="rounded-none border-white/10 text-brand-secondary text-[9px]  tracking-[0.2em] bg-transparent hover:bg-white/5 py-5 transition-colors cursor-pointer">
                   Terminal
                 </Button>
               </div>
