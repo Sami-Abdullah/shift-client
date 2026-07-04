@@ -1,11 +1,10 @@
+import { serverFetch } from "./server";
 
-import { headers } from "next/headers";
-import { auth } from "../auth";
-
-export const getUserSession = async () => {
-  const session = await auth.api.getSession({
-    headers: await headers() // you need to pass the headers object.
-  })
-  return session?.user||null
+export async function getUserSession() {
+  try {
+    const data = await serverFetch("/api/auth/get-session");
+    return data?.user || null;
+  } catch {
+    return null;
+  }
 }
-

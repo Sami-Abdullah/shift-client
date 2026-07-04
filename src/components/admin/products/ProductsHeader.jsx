@@ -1,11 +1,26 @@
+"use client";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Plus, Search, SlidersHorizontal } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useTransition } from "react";
 
-export default function ProductsHeader({ total, search, onSearch }) {
+export default function ProductsHeader({ total, search }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
+
+  const handleSearch = (value) => {
+    const params = new URLSearchParams();
+    if (value) params.set("search", value);
+    params.set("page", "1"); // reset to page 1 on new search
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`);
+    });
+  };
+
   return (
     <div className="mb-10">
-      {/* Page title */}
       <div className="flex items-start justify-between mb-8">
         <div>
           <div className="flex items-center gap-0 mb-5">
@@ -32,16 +47,12 @@ export default function ProductsHeader({ total, search, onSearch }) {
         </Link>
       </div>
 
-      {/* Search + Filter bar */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
-          <Search
-            size={12}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
-          />
+          <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
           <Input
-            value={search}
-            onChange={(e) => onSearch(e.target.value)}
+            defaultValue={search}
+            onChange={(e) => handleSearch(e.target.value)}
             placeholder="Search collection..."
             className="pl-8 h-9 rounded-none bg-muted border-border text-foreground placeholder:text-muted-foreground text-[11px] focus-visible:ring-0 focus-visible:border-foreground/30"
           />
