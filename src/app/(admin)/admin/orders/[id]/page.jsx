@@ -1,8 +1,16 @@
-import OrderDetailClient from "../../../../../components/admin/orders/details/OrderDetailClient";
-import { ORDERS } from "../../../../../components/admin/orders/OrdersClient";
+import { getAdminOrderById } from "@/lib/api/admin/orders";
+import OrderDetailClient from "@/components/admin/orders/details/OrderDetailClient";
 
-export default function OrderDetailPage({ params }) {
-  const order = ORDERS.find((o) => o.id === params.id);
+export default async function OrderDetailPage({ params }) {
+  const { id } = await params;
+
+  let order = null;
+  try {
+    const data = await getAdminOrderById(id);
+    order = data.order;
+  } catch {
+    order = null;
+  }
 
   if (!order) {
     return (

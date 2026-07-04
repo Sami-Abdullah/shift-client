@@ -12,7 +12,7 @@ export default function OrderItems({ order }) {
           <div key={i} className="flex items-center gap-4">
             <div className="w-16 h-20 bg-background overflow-hidden shrink-0">
               <Image
-                src={item.img}
+                src={item.image}
                 alt={item.name}
                 width={64}
                 height={80}
@@ -23,20 +23,19 @@ export default function OrderItems({ order }) {
             <div className="flex-1">
               <p className="text-[13px] font-medium text-foreground">{item.name}</p>
               <p className="text-[10px] text-muted-foreground mt-0.5 tracking-[0.1em] uppercase">
-                Size: {item.size} · Qty: {item.qty}
+                Size: {item.size} · Qty: {item.quantity}
               </p>
             </div>
             <p
               className="text-[15px] font-light text-foreground"
               style={{ fontFamily: "var(--font-serif)" }}
             >
-              ${(item.price * item.qty).toLocaleString()}
+              ${(item.price * item.quantity).toLocaleString()}
             </p>
           </div>
         ))}
       </div>
 
-      {/* Order totals */}
       <div className="mt-6 pt-5 border-t border-border flex flex-col gap-2">
         <div className="flex justify-between text-[11px]">
           <span className="text-muted-foreground">Subtotal</span>

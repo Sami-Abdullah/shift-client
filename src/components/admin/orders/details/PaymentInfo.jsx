@@ -26,10 +26,9 @@ export default function PaymentInfo({ order }) {
 
       <div className="text-[10px] text-muted-foreground font-mono pt-3 border-t border-border">
         <p className="mb-1">Payment Intent</p>
-        <p className="text-foreground">{order.payment.intentId}</p>
+        <p className="text-foreground">{order.payment.stripePaymentIntentId || "—"}</p>
       </div>
 
-      {/* Refund info if exists */}
       {order.refund && (
         <div className="mt-4 pt-4 border-t border-border">
           <p className="text-[9px] font-bold tracking-[0.16em] uppercase text-[#f87171] mb-2">
@@ -37,10 +36,12 @@ export default function PaymentInfo({ order }) {
           </p>
           <p className="text-[12px] text-foreground">${order.refund.amount.toLocaleString()}</p>
           <p className="text-[10px] text-muted-foreground mt-1">{order.refund.reason}</p>
-          <p className="text-[10px] text-muted-foreground mt-0.5">{order.refund.date}</p>
-          {order.refund.stripeRefundId !== "re_pending" && (
-            <p className="text-[10px] font-mono text-muted-foreground mt-1">{order.refund.stripeRefundId}</p>
+          {order.refund.date && (
+            <p className="text-[10px] text-muted-foreground mt-0.5">
+              {new Date(order.refund.date).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+            </p>
           )}
+          <p className="text-[10px] font-mono text-muted-foreground mt-1">{order.refund.stripeRefundId}</p>
         </div>
       )}
     </div>

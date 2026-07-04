@@ -1,7 +1,7 @@
 "use client";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { Plus, Search, SlidersHorizontal } from "lucide-react";
+import { Plus, Search, SlidersHorizontal, Download } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useTransition } from "react";
 
@@ -13,11 +13,13 @@ export default function ProductsHeader({ total, search }) {
   const handleSearch = (value) => {
     const params = new URLSearchParams();
     if (value) params.set("search", value);
-    params.set("page", "1"); // reset to page 1 on new search
+    params.set("page", "1");
     startTransition(() => {
-      router.push(`${pathname}?${params.toString()}`);
+      router.push(pathname + "?" + params.toString());
     });
   };
+
+  const exportUrl = process.env.NEXT_PUBLIC_API_URL + "/api/products/export";
 
   return (
     <div className="mb-10">
@@ -38,13 +40,25 @@ export default function ProductsHeader({ total, search }) {
           </p>
         </div>
 
-        <Link
-          href="/admin/products/new"
-          className="flex items-center gap-2 border border-foreground text-foreground px-6 py-3 text-[10px] font-bold tracking-[0.18em] uppercase hover:bg-foreground hover:text-background transition-colors shrink-0 mt-2"
-        >
-          <Plus size={12} />
-          New Entry
-        </Link>
+        <div className="flex items-center gap-3 shrink-0 mt-2">
+          <a
+            href={exportUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 border border-border text-muted-foreground px-4 py-2.5 text-[10px] font-bold tracking-[0.16em] uppercase hover:text-foreground hover:border-foreground/30 transition-colors"
+          >
+            <Download size={12} />
+            Export CSV
+          </a>
+
+          <Link
+            href="/admin/products/new"
+            className="flex items-center gap-2 border border-foreground text-foreground px-6 py-3 text-[10px] font-bold tracking-[0.18em] uppercase hover:bg-foreground hover:text-background transition-colors"
+          >
+            <Plus size={12} />
+            New Entry
+          </Link>
+        </div>
       </div>
 
       <div className="flex items-center gap-4">

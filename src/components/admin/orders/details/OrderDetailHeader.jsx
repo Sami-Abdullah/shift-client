@@ -1,5 +1,10 @@
+"use client";
+import { useState } from "react";
 import Link from "next/link";
 import { ChevronRight, RotateCcw } from "lucide-react";
+import { toast } from "react-toastify";
+import OrderStatusDialog from "../OrderStatusDialog";
+import { updateOrderStatus } from "@/lib/actions/admin/orders";
 
 const statusStyles = {
   delivered:  "border-[rgba(74,222,128,0.3)]  text-[#4ade80]",
@@ -10,11 +15,21 @@ const statusStyles = {
 };
 
 export default function OrderDetailHeader({ order, onRefund }) {
+  const [showStatus, setShowStatus] = useState(false);
+  const shortId = order._id?.slice(-8).toUpperCase();
   const canRefund = ["delivered", "shipped", "processing"].includes(order.status) && !order.refund;
+
+  const handleUpdateStatus = async (id, status, trackingNumber) => {
+    try {
+      await updateOrderStatus(id, { status, trackingNumber });
+      toast.success(`Order status updated to ${status}`);
+    } catch (err) {
+      toast.error(err.message || "Failed to update status");
+    }
+  };
 
   return (
     <div>
-      {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-6">
         <Link
           href="/admin/orders"
@@ -24,18 +39,17 @@ export default function OrderDetailHeader({ order, onRefund }) {
         </Link>
         <ChevronRight size={10} className="text-muted-foreground" />
         <span className="text-[9px] font-bold tracking-[0.18em] uppercase text-foreground">
-          #{order.id}
+          #{shortId}
         </span>
       </div>
 
-      {/* Title row */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-5">
           <h1
             className="text-[36px] font-light text-foreground leading-none"
             style={{ fontFamily: "var(--font-serif)" }}
           >
-            #{order.id}
+            #{shortId}
           </h1>
           <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[9px] font-bold tracking-[0.14em] uppercase border ${statusStyles[order.status]}`}>
             <span className="w-1.5 h-1.5 rounded-full bg-current opacity-70" />
@@ -43,8 +57,15 @@ export default function OrderDetailHeader({ order, onRefund }) {
           </span>
         </div>
 
-        {/* Actions */}
         <div className="flex items-center gap-3">
+          {order.status !== "cancelled" && (
+            <button
+              onClick={() => setShowStatus(true)}
+              className="border border-border text-muted-foreground px-4 py-2.5 text-[10px] font-bold tracking-[0.16em] uppercase hover:text-foreground hover:border-foreground/30 transition-colors"
+            >
+              Update Status
+            </button>
+          )}
           {canRefund && (
             <button
               onClick={onRefund}
@@ -64,11 +85,19 @@ export default function OrderDetailHeader({ order, onRefund }) {
         </div>
       </div>
 
-      {/* Date */}
       <p className="text-[11px] text-muted-foreground mt-3">
         Placed on {new Date(order.createdAt).toLocaleDateString("en-GB", { weekday: "long", day: "2-digit", month: "long", year: "numeric" })}
-        · Last updated {new Date(order.updatedAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+        {order.updatedAt && (
+          <> · Last updated {new Date(order.updatedAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</>
+        )}
       </p>
+
+      <OrderStatusDialog
+        open={showStatus}
+        onClose={() => setShowStatus(false)}
+        order={order}
+        onUpdateStatus={handleUpdateStatus}
+      />
     </div>
   );
 }

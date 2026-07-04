@@ -15,13 +15,14 @@ const REASONS = [
   "Other",
 ];
 
-export default function RefundDialog({ open, onClose, order, onConfirm }) {
+export default function RefundDialog({ open, onClose, order, onConfirm, loading }) {
   const [amount, setAmount] = useState(order?.total || "");
   const [reason, setReason] = useState("");
-  const [type,   setType]   = useState("full");
-  const [error,  setError]  = useState("");
+  const [type, setType]     = useState("full");
+  const [error, setError]   = useState("");
 
   if (!order) return null;
+  const shortId = order._id?.slice(-8).toUpperCase();
 
   const handleConfirm = () => {
     if (!amount || Number(amount) <= 0) {
@@ -41,7 +42,7 @@ export default function RefundDialog({ open, onClose, order, onConfirm }) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={loading ? undefined : onClose}>
       <DialogContent className="bg-[#0D0D0D] border border-border rounded-none max-w-sm">
         <DialogHeader>
           <DialogTitle
@@ -51,11 +52,10 @@ export default function RefundDialog({ open, onClose, order, onConfirm }) {
             Issue Refund
           </DialogTitle>
           <DialogDescription className="text-[11px] text-muted-foreground mt-1">
-            #{order.id} · Total: ${order.total.toLocaleString()}
+            #{shortId} · Total: ${order.total.toLocaleString()}
           </DialogDescription>
         </DialogHeader>
 
-        {/* Full / Partial toggle */}
         <div className="flex gap-0 mt-2">
           {["full", "partial"].map((t) => (
             <button
@@ -66,78 +66,61 @@ export default function RefundDialog({ open, onClose, order, onConfirm }) {
                 setError("");
               }}
               className={`flex-1 py-2 text-[10px] font-bold tracking-[0.16em] uppercase border transition-colors ${
-                type === t
-                  ? "bg-foreground text-background border-foreground"
-                  : "border-border text-muted-foreground hover:text-foreground"
+                type === t ? "bg-foreground text-background border-foreground" : "border-border text-muted-foreground hover:text-foreground"
               }`}
             >
-              {t === "full" ? `Full — $${order.total}` : "Partial"}
+              {t === "full" ? "Full Refund" : "Partial"}
             </button>
           ))}
         </div>
 
-        {/* Amount */}
         {type === "partial" && (
           <div className="mt-3">
             <label className="block text-[9px] font-bold tracking-[0.18em] uppercase text-muted-foreground mb-2">
-              Refund Amount (USD)
+              Refund Amount
             </label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[12px] text-muted-foreground">$</span>
-              <Input
-                type="number"
-                min="1"
-                max={order.total}
-                value={amount}
-                onChange={(e) => { setAmount(e.target.value); setError(""); }}
-                placeholder="0.00"
-                className="rounded-none bg-muted border-border text-foreground placeholder:text-muted-foreground/40 focus-visible:ring-0 focus-visible:border-foreground/30 h-9 text-[13px] pl-7"
-              />
-            </div>
+            <Input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="0.00"
+              className="rounded-none bg-muted border-border text-foreground h-9 text-[13px] focus-visible:ring-0 focus-visible:border-foreground/30"
+            />
           </div>
         )}
 
-        {/* Reason */}
         <div className="mt-3">
           <label className="block text-[9px] font-bold tracking-[0.18em] uppercase text-muted-foreground mb-2">
             Reason
           </label>
           <select
             value={reason}
-            onChange={(e) => { setReason(e.target.value); setError(""); }}
-            className="w-full h-9 bg-muted border border-border px-3 text-[12px] text-foreground focus:outline-none focus:border-foreground/30 transition-colors appearance-none cursor-pointer"
+            onChange={(e) => setReason(e.target.value)}
+            className="w-full h-9 bg-muted border border-border px-3 text-[12px] text-foreground focus:outline-none focus:border-foreground/30"
           >
-            <option value="" disabled className="bg-background">Select a reason...</option>
+            <option value="" disabled>Select a reason</option>
             {REASONS.map((r) => (
-              <option key={r} value={r} className="bg-background">{r}</option>
+              <option key={r} value={r}>{r}</option>
             ))}
           </select>
         </div>
 
-        {/* Error */}
-        {error && (
-          <p className="text-[10px] text-[#f87171] mt-1">{error}</p>
-        )}
-
-        {/* Warning */}
-        <div className="mt-3 p-3 border border-[rgba(251,191,36,0.2)] bg-[rgba(251,191,36,0.05)]">
-          <p className="text-[10px] text-[#fbbf24] leading-relaxed">
-            This will send a refund request to Stripe. The amount will be returned to the customer&apos;s original payment method within 5–10 business days.
-          </p>
-        </div>
+        {error && <p className="text-[10px] text-[#f87171] mt-2">{error}</p>}
 
         <div className="flex gap-3 mt-4">
           <button
             onClick={onClose}
-            className="flex-1 border border-border text-muted-foreground text-[10px] font-bold tracking-[0.16em] uppercase py-2.5 hover:border-foreground/30 hover:text-foreground transition-colors"
+            disabled={loading}
+            className="flex-1 border border-border text-muted-foreground text-[10px] font-bold tracking-[0.16em] uppercase py-2.5 hover:border-foreground/30 hover:text-foreground transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={handleConfirm}
-            className="flex-1 bg-[#f87171] text-[#0D0D0D] text-[10px] font-bold tracking-[0.16em] uppercase py-2.5 hover:bg-[#ef4444] transition-colors"
+            disabled={loading}
+            className="flex-1 bg-[#f87171] text-[#0D0D0D] text-[10px] font-bold tracking-[0.16em] uppercase py-2.5 hover:bg-[#ef4444] transition-colors disabled:opacity-50"
           >
-            Confirm Refund
+            {loading ? "Processing..." : "Confirm Refund"}
           </button>
         </div>
       </DialogContent>

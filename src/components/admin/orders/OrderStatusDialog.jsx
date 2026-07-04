@@ -15,13 +15,14 @@ const STATUSES = [
 ];
 
 export default function OrderStatusDialog({ open, onClose, order, onUpdateStatus }) {
-  const [selected,  setSelected]  = useState(order?.status || "");
-  const [tracking,  setTracking]  = useState(order?.shipping?.tracking || "");
+  const [selected, setSelected] = useState(order?.status || "");
+  const [tracking, setTracking] = useState(order?.trackingNumber || "");
 
   if (!order) return null;
+  const shortId = order._id?.slice(-8).toUpperCase();
 
   const handleConfirm = () => {
-    onUpdateStatus(order.id, selected, selected === "shipped" ? tracking : undefined);
+    onUpdateStatus(order._id, selected, selected === "shipped" ? tracking : undefined);
     onClose();
   };
 
@@ -36,7 +37,7 @@ export default function OrderStatusDialog({ open, onClose, order, onUpdateStatus
             Update Order Status
           </DialogTitle>
           <DialogDescription className="text-[11px] text-muted-foreground mt-1">
-            #{order.id} · {order.customer.name}
+            #{shortId} · {order.customerName}
           </DialogDescription>
         </DialogHeader>
 
@@ -48,9 +49,7 @@ export default function OrderStatusDialog({ open, onClose, order, onUpdateStatus
                 key={value}
                 onClick={() => setSelected(value)}
                 className={`flex items-center justify-between px-4 py-3 border transition-colors text-left ${
-                  active
-                    ? "border-foreground/30 bg-muted"
-                    : "border-transparent hover:bg-muted hover:border-border"
+                  active ? "border-foreground/30 bg-muted" : "border-transparent hover:bg-muted hover:border-border"
                 }`}
               >
                 <span className={`text-[11px] font-bold tracking-[0.14em] uppercase ${color}`}>
@@ -66,7 +65,6 @@ export default function OrderStatusDialog({ open, onClose, order, onUpdateStatus
           })}
         </div>
 
-        {/* Tracking number — only shows when shipped is selected */}
         {selected === "shipped" && (
           <div className="mt-3 pt-3 border-t border-border">
             <label className="block text-[9px] font-bold tracking-[0.18em] uppercase text-muted-foreground mb-2">
@@ -81,7 +79,6 @@ export default function OrderStatusDialog({ open, onClose, order, onUpdateStatus
           </div>
         )}
 
-        {/* Cancel warning */}
         {selected === "cancelled" && (
           <p className="text-[10px] text-[#f87171] mt-2 pt-3 border-t border-border">
             This will mark the payment as refunded. Use the refund button on the order detail page to process the actual Stripe refund.

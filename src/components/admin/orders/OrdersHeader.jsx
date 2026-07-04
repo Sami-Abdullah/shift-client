@@ -33,10 +33,14 @@ export default function OrdersHeader({ total }) {
           </p>
         </div>
         {/* Export */}
-        <button className="flex items-center gap-2 border border-border text-muted-foreground px-4 py-2.5 text-[10px] font-bold tracking-[0.16em] uppercase hover:text-foreground hover:border-foreground/30 transition-colors">
+        <a href={`${process.env.NEXT_PUBLIC_API_URL}/api/orders/export`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 border border-border text-muted-foreground px-4 py-2.5 text-[10px] font-bold tracking-[0.16em] uppercase hover:text-foreground hover:border-foreground/30 transition-colors"
+        >
           <Download size={12} />
           Export CSV
-        </button>
+        </a>
       </div>
     </div>
   );
