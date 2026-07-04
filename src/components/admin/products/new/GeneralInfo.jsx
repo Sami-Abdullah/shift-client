@@ -1,5 +1,6 @@
 import { Info } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { checkSkuAvailability } from "@/lib/actions/admin/products";
 
 const CATEGORIES = [
   "Outerwear", "Knitwear", "Tops",
@@ -8,7 +9,7 @@ const CATEGORIES = [
 
 const SKU_PATTERN = /^FRM-[A-Z]+-\d{3}-[A-Z]+$/;
 
-export default function GeneralInfo({ register, errors, existingSkus }) {
+export default function GeneralInfo({ register, errors, excludeId  }) {
   return (
     <div className="border border-border bg-muted p-6">
 
