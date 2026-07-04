@@ -8,10 +8,9 @@ const columns = [
   "Actions",
 ];
 
-export default function ProductsTable({ products, onDelete }) {
+export default function ProductsTable({ products }) {
   return (
     <div>
-      {/* Table header */}
       <div className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] gap-6 pb-4 border-b border-border">
         {columns.map((col) => (
           <p
@@ -23,14 +22,9 @@ export default function ProductsTable({ products, onDelete }) {
         ))}
       </div>
 
-      {/* Rows */}
       {products.length > 0 ? (
         products.map((product) => (
-          <ProductRow
-            key={product.id}
-            product={product}
-            onDelete={onDelete}
-          />
+          <ProductRow key={product._id} product={product} />
         ))
       ) : (
         <div className="py-20 text-center">

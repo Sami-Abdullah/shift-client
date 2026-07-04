@@ -27,3 +27,14 @@ export async function deleteProduct(id) {
   revalidatePath("/admin/products");
   return result;
 }
+
+export async function checkSkuAvailability(sku, excludeId = null) {
+  if (!sku) return true;
+
+  const params = new URLSearchParams({ sku: sku.toUpperCase() });
+  const data = await serverFetch(`/api/products?${params}`);
+  const match = data.products?.[0];
+
+  if (!match) return true;              // no product has this SKU — available
+  return excludeId ? match._id === excludeId : false; // editing your own SKU is fine
+}

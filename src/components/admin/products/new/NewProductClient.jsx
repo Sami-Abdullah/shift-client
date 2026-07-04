@@ -1,20 +1,23 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import ProductFormHeader  from "./ProductFormHeader";
 import GeneralInfo        from "./GeneralInfo";
 import MediaUpload        from "./MediaUpload";
 import PricingInventory   from "./PricingInventory";
 import ProductVisibility  from "./ProductVisibility";
 import FormActions        from "./FormActions";
+import { createProduct }  from "@/lib/actions/admin/products";
 
-// Simulating existing SKUs from your database
-// Later replace this with: const res = await fetch(`/api/products/check-sku?sku=${sku}`)
+// TODO: replace with a real fetch — see note below
 const EXISTING_SKUS = ["FRM-C-104-BLK", "FRM-K-882-CRM", "FRM-T-211-GRY"];
 
 export default function NewProductClient() {
-  const [images, setImages]       = useState([]);
+  const router = useRouter();
+  const [images, setImages]           = useState([]); // [{ id, url, uploading }]
   const [submitState, setSubmitState] = useState("idle"); // idle | loading | success | error
+  const [errorMessage, setErrorMessage] = useState("");
 
   const {
     register,
@@ -35,17 +38,34 @@ export default function NewProductClient() {
     },
   });
 
-  const sizes   = watch("sizes");
+  const sizes    = watch("sizes");
   const totalQty = Object.values(sizes).reduce((a, b) => a + Number(b), 0);
 
+  const stillUploading = images.some((img) => img.uploading);
+
   const onSubmit = async (data) => {
-    if (images.length === 0) return; // caught by image validation below
+    if (images.length === 0 || stillUploading) return;
+
     setSubmitState("loading");
+    setErrorMessage("");
+
     try {
-      console.log("Submitting:", { ...data, images, totalQty });
-      // await fetch("/api/products", { method: "POST", body: JSON.stringify({...data, images}) })
+      const payload = {
+        ...data,
+        price: Number(data.price),
+        images: images.map((img) => img.url), // strip down to plain URL strings
+        sizes,
+      };
+
+      await createProduct(payload);
       setSubmitState("success");
-    } catch {
+
+      // Give the success banner a moment to show, then go back to the list
+      setTimeout(() => {
+        router.push("/admin/products");
+      }, 1000);
+    } catch (err) {
+      setErrorMessage(err.message);
       setSubmitState("error");
     }
   };
@@ -54,7 +74,6 @@ export default function NewProductClient() {
     <div className="max-w-3xl">
       <ProductFormHeader />
 
-      {/* Success banner */}
       {submitState === "success" && (
         <div className="mb-6 px-4 py-3 border border-[rgba(74,222,128,0.3)] bg-[rgba(74,222,128,0.06)]">
           <p className="text-[11px] font-bold tracking-[0.14em] uppercase text-[#4ade80]">
@@ -63,11 +82,10 @@ export default function NewProductClient() {
         </div>
       )}
 
-      {/* Error banner */}
       {submitState === "error" && (
         <div className="mb-6 px-4 py-3 border border-[rgba(248,113,113,0.3)] bg-[rgba(248,113,113,0.06)]">
           <p className="text-[11px] font-bold tracking-[0.14em] uppercase text-[#f87171]">
-            ✗ Something went wrong. Please try again.
+            ✗ {errorMessage || "Something went wrong. Please try again."}
           </p>
         </div>
       )}
@@ -78,13 +96,13 @@ export default function NewProductClient() {
           <GeneralInfo
             register={register}
             errors={errors}
-            existingSkus={EXISTING_SKUS}
+
           />
 
           <MediaUpload
             images={images}
             setImages={setImages}
-            imageError={errors.images}
+            imageError={images.length === 0 ? errors.images : null}
           />
 
           <PricingInventory
@@ -96,13 +114,11 @@ export default function NewProductClient() {
             totalQty={totalQty}
           />
 
-          <ProductVisibility
-            control={control}
-          />
+          <ProductVisibility control={control} />
 
         </div>
 
-        <FormActions loading={submitState === "loading"} />
+        <FormActions loading={submitState === "loading" || stillUploading} />
       </form>
     </div>
   );

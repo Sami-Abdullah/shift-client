@@ -8,9 +8,9 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
-export default function DeleteDialog({ open, onClose, onConfirm, productName }) {
+export default function DeleteDialog({ open, onClose, onConfirm, productName, loading }) {
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={loading ? undefined : onClose}>
       <DialogContent className="bg-[#0D0D0D] border border-border rounded-none max-w-sm">
         <DialogHeader>
           <DialogTitle
@@ -28,15 +28,17 @@ export default function DeleteDialog({ open, onClose, onConfirm, productName }) 
         <DialogFooter className="flex gap-3 mt-2">
           <button
             onClick={onClose}
-            className="flex-1 border border-border text-muted-foreground text-[10px] font-bold tracking-[0.16em] uppercase py-2.5 hover:border-foreground/30 hover:text-foreground transition-colors"
+            disabled={loading}
+            className="flex-1 border border-border text-muted-foreground text-[10px] font-bold tracking-[0.16em] uppercase py-2.5 hover:border-foreground/30 hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 bg-[#f87171] text-[#0D0D0D] text-[10px] font-bold tracking-[0.16em] uppercase py-2.5 hover:bg-[#ef4444] transition-colors"
+            disabled={loading}
+            className="flex-1 bg-[#f87171] text-[#0D0D0D] text-[10px] font-bold tracking-[0.16em] uppercase py-2.5 hover:bg-[#ef4444] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Remove
+            {loading ? "Removing..." : "Remove"}
           </button>
         </DialogFooter>
       </DialogContent>

@@ -27,7 +27,7 @@ export default function EditProductClient({ product }) {
   // Exclude the current product's own SKU from duplicate check
   const existingSkus = ALL_SKUS.filter((s) => s !== product.sku);
 
-  const [images, setImages]           = useState(product.images || []);
+  const [images, setImages] = useState(product.images || []);
   const [submitState, setSubmitState] = useState("idle");
 
   const {
@@ -39,17 +39,17 @@ export default function EditProductClient({ product }) {
     formState: { errors, isDirty },
   } = useForm({
     defaultValues: {
-      name:        product.name,
+      name: product.name,
       description: product.description,
-      category:    product.category,
-      sku:         product.sku,
-      price:       product.price,
-      visible:     product.visible,
-      sizes:       product.sizes,
+      category: product.category,
+      sku: product.sku,
+      price: product.price,
+      visible: product.visible,
+      sizes: product.sizes,
     },
   });
 
-  const sizes    = watch("sizes");
+  const sizes = watch("sizes");
   const totalQty = Object.values(sizes).reduce((a, b) => a + Number(b), 0);
 
   const onSubmit = async (data) => {
@@ -134,10 +134,10 @@ export default function EditProductClient({ product }) {
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="flex flex-col gap-6">
 
-          <GeneralInfo
-            register={register}
-            errors={errors}
-            existingSkus={existingSkus}
+          <GeneralInfo 
+            register={register} 
+            errors={errors} 
+            excludeId={product._id} 
           />
 
           <MediaUpload

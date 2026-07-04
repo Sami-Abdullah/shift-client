@@ -27,9 +27,8 @@ export default function GeneralInfo({ register, errors, existingSkus }) {
         </label>
         <Input
           placeholder="e.g. Minimalist Wool Overcoat"
-          className={`rounded-none bg-background border-border text-foreground placeholder:text-muted-foreground/40 focus-visible:ring-0 h-10 text-[13px] transition-colors ${
-            errors.name ? "border-[#f87171]" : "focus-visible:border-foreground/30"
-          }`}
+          className={`rounded-none bg-background border-border text-foreground placeholder:text-muted-foreground/40 focus-visible:ring-0 h-10 text-[13px] transition-colors ${errors.name ? "border-[#f87171]" : "focus-visible:border-foreground/30"
+            }`}
           {...register("name", {
             required: "Product name is required",
             minLength: { value: 3, message: "Name must be at least 3 characters" },
@@ -59,9 +58,8 @@ export default function GeneralInfo({ register, errors, existingSkus }) {
         <textarea
           placeholder="Describe the craftsmanship and materials..."
           rows={5}
-          className={`w-full bg-background border px-4 py-3 text-[13px] text-foreground placeholder:text-muted-foreground/40 focus:outline-none resize-none transition-colors ${
-            errors.description ? "border-[#f87171]" : "border-border focus:border-foreground/30"
-          }`}
+          className={`w-full bg-background border px-4 py-3 text-[13px] text-foreground placeholder:text-muted-foreground/40 focus:outline-none resize-none transition-colors ${errors.description ? "border-[#f87171]" : "border-border focus:border-foreground/30"
+            }`}
           {...register("description", {
             required: "Description is required",
             minLength: { value: 20, message: "Description must be at least 20 characters" },
@@ -81,9 +79,8 @@ export default function GeneralInfo({ register, errors, existingSkus }) {
             Category <span className="text-[#f87171]">*</span>
           </label>
           <select
-            className={`w-full h-10 bg-background border px-3 text-[13px] text-foreground focus:outline-none transition-colors appearance-none cursor-pointer ${
-              errors.category ? "border-[#f87171]" : "border-border focus:border-foreground/30"
-            }`}
+            className={`w-full h-10 bg-background border px-3 text-[13px] text-foreground focus:outline-none transition-colors appearance-none cursor-pointer ${errors.category ? "border-[#f87171]" : "border-border focus:border-foreground/30"
+              }`}
             {...register("category", {
               required: "Please select a category",
             })}
@@ -109,9 +106,8 @@ export default function GeneralInfo({ register, errors, existingSkus }) {
           </label>
           <Input
             placeholder="FRM-OUT-001-BLK"
-            className={`rounded-none bg-background border-border text-foreground placeholder:text-muted-foreground/40 focus-visible:ring-0 h-10 text-[13px] font-mono transition-colors ${
-              errors.sku ? "border-[#f87171]" : "focus-visible:border-foreground/30"
-            }`}
+            className={`rounded-none bg-background border-border text-foreground placeholder:text-muted-foreground/40 focus-visible:ring-0 h-10 text-[13px] font-mono transition-colors ${errors.sku ? "border-[#f87171]" : "focus-visible:border-foreground/30"
+              }`}
             {...register("sku", {
               required: "SKU is required",
               pattern: {
@@ -119,9 +115,10 @@ export default function GeneralInfo({ register, errors, existingSkus }) {
                 message: "Format must be FRM-XXX-000-XXX (e.g. FRM-OUT-001-BLK)",
               },
               validate: {
-                unique: (value) =>
-                  !existingSkus.includes(value.toUpperCase()) ||
-                  "This SKU already exists — each product must have a unique SKU",
+                unique: async (value) => {
+                  const available = await checkSkuAvailability(value, excludeId);
+                  return available || "This SKU already exists — each product must have a unique SKU";
+                },
               },
             })}
           />
