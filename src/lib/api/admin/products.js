@@ -9,3 +9,18 @@ export async function getAdminProducts({ search = "", page = 1, limit = 12 } = {
 export async function getAdminProductById(id) {
   return serverFetch(`/api/products/${id}`);
 }
+
+export async function checkSkuAvailability(sku, excludeId = null) {
+  if (!sku) return true;
+
+  const params = new URLSearchParams({ sku: sku.toUpperCase() });
+  const data = await serverFetch(`/api/products?${params}`);
+  const match = data.products?.[0];
+
+  if (!match) return true;
+  return excludeId ? match._id === excludeId : false;
+}
+
+export async function getLowStockProducts(limit = 5) {
+  return serverFetch(`/api/products?stockStatus=low&limit=${limit}`);
+}
