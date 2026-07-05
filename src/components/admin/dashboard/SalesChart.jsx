@@ -1,36 +1,60 @@
 "use client";
+import { useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 function CustomTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-muted border border-border px-3 py-2">
-      <p className="text-[9px] text-muted-foreground mb-0.5">{label}</p>
-      <p className="text-[12px] font-medium text-foreground">${payload[0].value.toLocaleString()}</p>
+      <p className="text-caption mb-0.5">{label}</p>
+      <p className="text-data font-medium">${payload[0].value.toLocaleString()}</p>
     </div>
   );
 }
 
-export default function SalesChart({ data }) {
-  const chartData = data.map((d) => ({
-    period: new Date(d._id).toLocaleDateString("en-GB", { day: "2-digit", month: "short" }),
+function formatLabel(id, period) {
+  if (period === "monthly") {
+    const [year, month] = id.split("-");
+    return new Date(year, month - 1).toLocaleDateString("en-GB", { month: "short", year: "2-digit" });
+  }
+  const [, week] = id.split("-");
+  return `Wk ${week}`;
+}
+
+export default function SalesChart({ weeklyData, monthlyData }) {
+  const [period, setPeriod] = useState("weekly");
+  const raw = period === "weekly" ? weeklyData : monthlyData;
+
+  const chartData = raw.map((d) => ({
+    period: formatLabel(d._id, period),
     v: d.revenue,
   }));
 
   return (
     <div className="border border-border bg-muted p-6">
-      <div className="mb-6">
-        <p className="text-[10px] italic text-muted-foreground mb-1" style={{ fontFamily: "var(--font-serif)" }}>
-          Last 30 Days
-        </p>
-        <p className="text-[11px] font-bold tracking-[0.18em] uppercase text-foreground">
-          Sales Velocity
-        </p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <p className="text-eyebrow mb-1">{period === "weekly" ? "Last 8 Weeks" : "Last 6 Months"}</p>
+          <p className="text-label">Sales Velocity</p>
+        </div>
+        <div className="flex border border-border">
+          {["weekly", "monthly"].map((p) => (
+            <button
+              key={p}
+              onClick={() => setPeriod(p)}
+              className={`px-3 py-1.5 text-label transition-colors ${
+                period === p ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {p === "weekly" ? "Weekly" : "Monthly"}
+            </button>
+          ))}
+        </div>
       </div>
 
       {chartData.length === 0 ? (
         <div className="h-[200px] flex items-center justify-center">
-          <p className="text-[12px] text-muted-foreground">No sales in the last 30 days.</p>
+          <p className="text-body text-muted-foreground">No sales in this period.</p>
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={200}>

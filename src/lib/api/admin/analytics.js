@@ -4,8 +4,8 @@ export async function getDashboardAnalytics() {
   return serverFetch("/api/orders/analytics");
 }
 
-export async function getSalesChart() {
-  return serverFetch("/api/orders/analytics/sales-chart");
+export async function getSalesChart(period = "weekly") {
+  return serverFetch(`/api/orders/analytics/sales-chart?period=${period}`);
 }
 
 export async function getTopProducts() {

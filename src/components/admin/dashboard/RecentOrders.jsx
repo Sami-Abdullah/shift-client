@@ -1,53 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
-
-const orders = [
-  {
-    id: "#FRM-5021",
-    customer: "Isabelle Fontaine",
-    location: "Paris, FR",
-    items: "Cashmere Column Coat",
-    date: "24 Jun 2026",
-    value: "$2,890",
-    status: "delivered",
-  },
-  {
-    id: "#FRM-5020",
-    customer: "James Okafor",
-    location: "London, UK",
-    items: "Obsidian Structured Blazer",
-    date: "24 Jun 2026",
-    value: "$1,240",
-    status: "shipped",
-  },
-  {
-    id: "#FRM-5019",
-    customer: "Yui Tanaka",
-    location: "Tokyo, JP",
-    items: "Saddle Leather Tote",
-    date: "23 Jun 2026",
-    value: "$1,650",
-    status: "processing",
-  },
-  {
-    id: "#FRM-5018",
-    customer: "Omar Hassan",
-    location: "Dubai, AE",
-    items: "Merino Turtleneck × 2",
-    date: "23 Jun 2026",
-    value: "$960",
-    status: "pending",
-  },
-  {
-    id: "#FRM-5017",
-    customer: "Elena Rossi",
-    location: "Milan, IT",
-    items: "Silk Bias-Cut Dress",
-    date: "22 Jun 2026",
-    value: "$1,890",
-    status: "cancelled",
-  },
-];
+import { ArrowUpRight, Download } from "lucide-react";
 
 const statusStyles = {
   delivered:  "border border-[rgba(74,222,128,0.3)]  text-[#4ade80]",
@@ -57,75 +9,61 @@ const statusStyles = {
   cancelled:  "border border-[rgba(248,113,113,0.3)] text-[#f87171]",
 };
 
-export default function RecentOrders() {
+export default function RecentOrders({ orders }) {
   return (
     <div className="mt-8">
-
-      {/* Section header */}
       <div className="flex items-center justify-between mb-5">
-        <p
-          className="text-[12px] italic text-muted-foreground"
-          style={{ fontFamily: "var(--font-serif)" }}
-        >
-          Recent Orders
-        </p>
-        <Link
-          href="/admin/orders"
-          className="flex items-center gap-1.5 text-[9px] font-bold tracking-[0.18em] uppercase text-muted-foreground hover:text-foreground transition-colors"
-        >
-          View All Orders
-          <ArrowUpRight size={11} />
-        </Link>
+        <p className="text-eyebrow">Recent Orders</p>
+
+        <div className="flex items-center gap-4">
+          <a
+            href={`${process.env.NEXT_PUBLIC_API_URL}/api/orders/export`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-label hover:text-foreground transition-colors"
+          >
+            <Download size={11} />
+            Download CSV
+          </a>
+          <Link href="/admin/orders" className="flex items-center gap-1.5 text-label hover:text-foreground transition-colors">
+            View All Orders
+            <ArrowUpRight size={11} />
+          </Link>
+        </div>
       </div>
 
-      {/* Table header */}
       <div className="grid grid-cols-5 pb-3 border-b border-border">
-        {["Order", "Customer", "Item", "Date", "Value", "Status"].map((h) => (
-          <p
-            key={h}
-            className={`text-[9px] font-bold tracking-[0.2em] uppercase text-muted-foreground ${h === "Status" ? "col-span-1 text-right" : ""}`}
-          >
-            {h}
-          </p>
+        {["Order", "Customer", "Item", "Date", "Value"].map((h) => (
+          <p key={h} className="text-label">{h}</p>
         ))}
       </div>
 
-      {/* Rows */}
       {orders.map((o) => (
-        <div
-          key={o.id}
-          className="grid grid-cols-5 py-5 border-b border-border items-center hover:bg-muted/30 transition-colors group"
-        >
-          {/* Order ID */}
-          <div>
-            <p className="text-[11px] font-mono text-muted-foreground">{o.id}</p>
-          </div>
+        <div key={o._id} className="grid grid-cols-5 py-5 border-b border-border items-center hover:bg-muted/30 transition-colors group">
+          <p className="text-data-mono">#{o._id.slice(-8).toUpperCase()}</p>
 
-          {/* Customer */}
           <div>
-            <p className="text-[12px] font-medium text-foreground">{o.customer}</p>
-            <p className="text-[9px] tracking-[0.1em] uppercase text-muted-foreground mt-0.5">
-              {o.location}
+            <p className="text-data font-medium">{o.customerName}</p>
+            <p className="text-caption mt-0.5 tracking-[0.1em] uppercase">
+              {o.shippingAddress?.city}, {o.shippingAddress?.country}
             </p>
           </div>
 
-          {/* Item */}
-          <p className="text-[12px] text-foreground">{o.items}</p>
+          <p className="text-data">
+            {o.items[0]?.name}{o.items.length > 1 ? ` +${o.items.length - 1}` : ""}
+          </p>
 
-          {/* Date */}
-          <p className="text-[11px] text-muted-foreground">{o.date}</p>
+          <p className="text-caption">
+            {o.createdAt
+              ? new Date(o.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+              : "—"}
+          </p>
 
-          {/* Value + Status — last column spans both */}
           <div className="flex items-center justify-between">
-            <p
-              className="text-[13px] font-light text-foreground"
-              style={{ fontFamily: "var(--font-serif)" }}
-            >
-              {o.value}
+            <p className="text-heading" style={{ fontSize: "13px" }}>
+              ${o.total.toLocaleString()}
             </p>
-            <span
-              className={`inline-flex px-2.5 py-1 text-[9px] font-bold tracking-[0.16em] uppercase ${statusStyles[o.status]}`}
-            >
+            <span className={`inline-flex px-2.5 py-1 text-label ${statusStyles[o.status]}`}>
               {o.status}
             </span>
           </div>

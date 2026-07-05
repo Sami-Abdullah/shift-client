@@ -2,7 +2,7 @@
 import { useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Pencil, Copy, Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import DeleteDialog from "./DeleteDialog";
 import { deleteProduct } from "@/lib/actions/admin/products";
 
@@ -33,7 +33,7 @@ export default function ProductRow({ product }) {
 
   return (
     <>
-      <div className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] gap-6 py-6 border-b border-border items-center hover:bg-muted/20 transition-colors group">
+      <div className="grid grid-cols-[2.4fr_1fr_1.1fr_0.7fr_88px] gap-6 py-6 border-b border-border items-center hover:bg-muted/20 transition-colors group">
 
         <div className="flex items-center gap-5">
           <div className="w-[72px] h-[90px] bg-muted overflow-hidden shrink-0">
@@ -76,13 +76,13 @@ export default function ProductRow({ product }) {
         </div>
 
         <p
-          className="text-[15px] font-light text-foreground"
+          className="text-[15px] font-light text-foreground text-right"
           style={{ fontFamily: "var(--font-serif)" }}
         >
           ${product.price.toLocaleString()}
         </p>
 
-        <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <Link
             href={`/admin/products/${product._id}/edit`}
             className="w-8 h-8 flex items-center justify-center border border-border text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
@@ -90,12 +90,6 @@ export default function ProductRow({ product }) {
           >
             <Pencil size={12} />
           </Link>
-          <button
-            className="w-8 h-8 flex items-center justify-center border border-border text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
-            title="Duplicate"
-          >
-            <Copy size={12} />
-          </button>
           <button
             onClick={() => setShowDelete(true)}
             className="w-8 h-8 flex items-center justify-center border border-[rgba(248,113,113,0.2)] text-[#f87171]/50 hover:text-[#f87171] hover:border-[rgba(248,113,113,0.5)] transition-colors"

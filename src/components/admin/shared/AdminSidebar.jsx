@@ -10,8 +10,7 @@ const navItems = [
   { label: "Dashboard",          href: "/admin",                 icon: LayoutDashboard },
   { label: "Product Management", href: "/admin/products",        icon: Package },
   { label: "Orders",             href: "/admin/orders",          icon: ShoppingCart },
-  { label: "Brand Archives",     href: "/admin/brand-archives",  icon: BookMarked },
-  { label: "Customers",          href: "/admin/customers",      icon: Users },
+
 ];
 
 export default function AdminSidebar() {
@@ -65,22 +64,7 @@ export default function AdminSidebar() {
       </div>
 
       {/* Bottom links */}
-      <div className="border-t border-border px-3 py-4 flex flex-col gap-1">
-        <Link
-          href="/admin/settings"
-          className="flex items-center gap-3 px-3 py-2.5 text-[10px] font-semibold tracking-[0.14em] uppercase text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <Settings size={13} strokeWidth={1.5} />
-          Settings
-        </Link>
-        <Link
-          href="/admin/help"
-          className="flex items-center gap-3 px-3 py-2.5 text-[10px] font-semibold tracking-[0.14em] uppercase text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <HelpCircle size={13} strokeWidth={1.5} />
-          Help Center
-        </Link>
-      </div>
+
     </aside>
   );
 }

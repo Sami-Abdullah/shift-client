@@ -37,51 +37,51 @@ export default function OrderRow({ order }) {
 
   return (
     <>
-      <div className="grid grid-cols-[1.2fr_1.4fr_1fr_0.7fr_0.8fr_1fr_auto] gap-4 py-5 border-b border-border items-center hover:bg-muted/20 transition-colors group">
+      <div className="grid grid-cols-[110px_1.3fr_1fr_90px_100px_130px_120px] gap-4 py-5 border-b border-border items-center hover:bg-muted/20 transition-colors group">
         <div>
-          <p className="text-[11px] font-mono text-muted-foreground">#{shortId}</p>
-          <p className="text-[10px] text-muted-foreground/40 mt-0.5">{date}</p>
+          <p className="text-data-mono">#{shortId}</p>
+          <p className="text-caption mt-0.5">{date}</p>
         </div>
 
         <div>
-          <p className="text-[12px] font-medium text-foreground">{order.customerName}</p>
-          <p className="text-[10px] text-muted-foreground mt-0.5">
+          <p className="text-data font-medium">{order.customerName}</p>
+          <p className="text-caption mt-0.5">
             {order.shippingAddress?.city}, {order.shippingAddress?.country}
           </p>
         </div>
 
         <div>
           {order.items.map((item, i) => (
-            <p key={i} className="text-[11px] text-foreground leading-snug">
+            <p key={i} className="text-data leading-snug">
               {item.name}
               <span className="text-muted-foreground ml-1">· {item.size} × {item.quantity}</span>
             </p>
           ))}
         </div>
 
-        <p className="text-[14px] font-light text-foreground" style={{ fontFamily: "var(--font-serif)" }}>
+        <p className="text-heading text-right" style={{ fontSize: "14px" }}>
           ${order.total.toLocaleString()}
         </p>
 
-        <p className={`text-[10px] font-bold tracking-[0.12em] uppercase ${paymentStyles[order.payment?.status] || "text-muted-foreground"}`}>
+        <p className={`text-label ${paymentStyles[order.payment?.status] || "text-muted-foreground"}`}>
           {order.payment?.status}
         </p>
 
-        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[9px] font-bold tracking-[0.14em] uppercase border ${statusStyles[order.status]}`}>
+        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-label border w-fit ${statusStyles[order.status]}`}>
           <span className="w-1.5 h-1.5 rounded-full bg-current opacity-70" />
           {order.status}
         </span>
 
-        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={() => setShowStatus(true)}
-            className="px-3 py-1.5 border border-border text-[9px] font-bold tracking-[0.14em] uppercase text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
+            className="px-3 py-1.5 border border-border text-label hover:text-foreground hover:border-foreground/30 transition-colors whitespace-nowrap"
           >
             Update
           </button>
           <Link
             href={`/admin/orders/${order._id}`}
-            className="w-7 h-7 border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
+            className="w-7 h-7 border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors shrink-0"
           >
             <ChevronRight size={12} />
           </Link>

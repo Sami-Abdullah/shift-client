@@ -1,21 +1,31 @@
 "use client";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { Plus, Search, SlidersHorizontal, Download } from "lucide-react";
+import { Plus, Search, Download } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useTransition } from "react";
 
-export default function ProductsHeader({ total, search }) {
+const CATEGORIES = ["All", "Outerwear", "Knitwear", "Tops", "Bottoms", "Accessories", "Footwear"];
+const STATUSES = [
+  { value: "All", label: "All Status" },
+  { value: "in",  label: "In Stock" },
+  { value: "low", label: "Low Stock" },
+  { value: "out", label: "Out of Stock" },
+];
+
+export default function ProductsHeader({ total, search, category, stockStatus }) {
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
 
-  const handleSearch = (value) => {
+  const updateParams = (next) => {
     const params = new URLSearchParams();
-    if (value) params.set("search", value);
+    if (next.search) params.set("search", next.search);
+    if (next.category && next.category !== "All") params.set("category", next.category);
+    if (next.stockStatus && next.stockStatus !== "All") params.set("stockStatus", next.stockStatus);
     params.set("page", "1");
     startTransition(() => {
-      router.push(pathname + "?" + params.toString());
+      router.push(`${pathname}?${params.toString()}`);
     });
   };
 
@@ -61,20 +71,40 @@ export default function ProductsHeader({ total, search }) {
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <div className="relative flex-1 max-w-sm">
           <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
           <Input
             defaultValue={search}
-            onChange={(e) => handleSearch(e.target.value)}
-            placeholder="Search collection..."
+            onChange={(e) => updateParams({ search: e.target.value, category, stockStatus })}
+            placeholder="Search by name or SKU..."
             className="pl-8 h-9 rounded-none bg-muted border-border text-foreground placeholder:text-muted-foreground text-[11px] focus-visible:ring-0 focus-visible:border-foreground/30"
           />
         </div>
-        <button className="flex items-center gap-2 px-4 h-9 border border-border text-[10px] font-bold tracking-[0.18em] uppercase text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors">
-          <SlidersHorizontal size={12} />
-          Filter
-        </button>
+
+        <select
+          value={category}
+          onChange={(e) => updateParams({ search, category: e.target.value, stockStatus })}
+          className="h-9 px-3 mz bg-muted border border-border text-[11px] text-foreground focus:outline-none focus:border-foreground/30 cursor-pointer"
+        >
+          {CATEGORIES.map((c) => (
+            <option key={c} value={c} className="bg-background">
+              {c === "All" ? "All Categories" : c}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={stockStatus}
+          onChange={(e) => updateParams({ search, category, stockStatus: e.target.value })}
+          className="h-9 px-3 bg-muted border border-border text-[11px] text-foreground focus:outline-none focus:border-foreground/30 cursor-pointer"
+        >
+          {STATUSES.map((s) => (
+            <option key={s.value} value={s.value} className="bg-background">
+              {s.label}
+            </option>
+          ))}
+        </select>
       </div>
     </div>
   );

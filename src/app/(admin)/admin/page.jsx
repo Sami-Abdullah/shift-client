@@ -9,9 +9,10 @@ import SalesChart from "@/components/admin/dashboard/SalesChart";
 import TopProducts from "@/components/admin/dashboard/TopProducts";
 
 export default async function AdminDashboardPage() {
-  const [analyticsData, salesChartData, topProductsData, ordersData, lowStockData] = await Promise.all([
+  const [analyticsData, weeklyData, monthlyData, topProductsData, ordersData, lowStockData] = await Promise.all([
     getDashboardAnalytics(),
-    getSalesChart(),
+    getSalesChart("weekly"),
+    getSalesChart("monthly"),
     getTopProducts(),
     getAdminOrders({ page: 1, limit: 5 }),
     getLowStockProducts(5),
@@ -24,7 +25,7 @@ export default async function AdminDashboardPage() {
 
       <div className="grid grid-cols-3 gap-4">
         <div className="col-span-2">
-          <SalesChart data={salesChartData.salesByDay} />
+          <SalesChart weeklyData={weeklyData.salesByDay} monthlyData={monthlyData.salesByDay} />
         </div>
         <TopProducts products={topProductsData.topProducts} />
       </div>
