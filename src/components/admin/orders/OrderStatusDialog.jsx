@@ -7,11 +7,11 @@ import {
 import { Input } from "@/components/ui/input";
 
 const STATUSES = [
-  { value: "pending",    label: "Pending",    color: "text-muted-foreground" },
+  { value: "pending", label: "Pending", color: "text-muted-foreground" },
   { value: "processing", label: "Processing", color: "text-[#fbbf24]" },
-  { value: "shipped",    label: "Shipped",    color: "text-[#60a5fa]" },
-  { value: "delivered",  label: "Delivered",  color: "text-[#4ade80]" },
-  { value: "cancelled",  label: "Cancelled",  color: "text-[#f87171]" },
+  { value: "shipped", label: "Shipped", color: "text-[#60a5fa]" },
+  { value: "delivered", label: "Delivered", color: "text-[#4ade80]" },
+  { value: "cancelled", label: "Cancelled", color: "text-[#f87171]" },
 ];
 
 export default function OrderStatusDialog({ open, onClose, order, onUpdateStatus }) {
@@ -44,13 +44,19 @@ export default function OrderStatusDialog({ open, onClose, order, onUpdateStatus
         <div className="flex flex-col gap-1 mt-2">
           {STATUSES.map(({ value, label, color }) => {
             const active = selected === value;
+            const disabled = value === "cancelled" && ["shipped", "delivered"].includes(order.status);
+
             return (
               <button
                 key={value}
-                onClick={() => setSelected(value)}
-                className={`flex items-center justify-between px-4 py-3 border transition-colors text-left ${
-                  active ? "border-foreground/30 bg-muted" : "border-transparent hover:bg-muted hover:border-border"
-                }`}
+                onClick={() => !disabled && setSelected(value)}
+                disabled={disabled}
+                className={`flex items-center justify-between px-4 py-3 border transition-colors text-left ${disabled
+                    ? "opacity-30 cursor-not-allowed border-transparent"
+                    : active
+                      ? "border-foreground/30 bg-muted"
+                      : "border-transparent hover:bg-muted hover:border-border"
+                  }`}
               >
                 <span className={`text-[11px] font-bold tracking-[0.14em] uppercase ${color}`}>
                   {label}

@@ -7,11 +7,11 @@ import { useForm } from 'react-hook-form';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
   CardTitle,
   CardFooter
 } from "@/components/ui/card";
@@ -30,44 +30,47 @@ export default function SignInPage() {
     }
   });
 
-  const onSubmit = async(data) => {
-    const { data:res, error } = await authClient.signIn.email({
-        email:data.email,
-        password:data.password,
-},)
+  const onSubmit = async (data) => {
+    const { data: res, error } = await authClient.signIn.email({
+      email: data.email,
+      password: data.password,
+    });
 
-  if(res){
-    toast('you signed in')
-    router.push('/')
-    router.refresh()
-  }
-  else{
-    toast.error(`${error}`)
-  }
+    if (res) {
+      toast('you signed in');
+
+      if (res.user?.role === 'admin') {
+        router.push('/admin');
+      } else {
+        router.push('/');
+      }
+
+      router.refresh();
+    } else {
+      toast.error(`${error}`);
+    }
   };
 
   return (
     <main className="min-h-screen w-full bg-brand-neutral grid grid-cols-1 md:grid-cols-2">
       {/* Left Column: Visual Media & Brand Philosophy Frame */}
       <div className="relative hidden md:flex flex-col justify-between p-12 overflow-hidden border-r border-white/5">
-        <Image 
-          src="/images/signin.png" 
-          alt="Shift Editorial Silhouette" 
+        <Image
+          src="/images/signin.png"
+          alt="Shift Editorial Silhouette"
           fill
           priority
           className="object-cover object-center"
         />
         <div className="absolute inset-0 bg-black/10" />
-        
-        <span className="relative z-10 text-[10px]  tracking-[0.3em] text-brand-secondary/60">
+
+        <span className="relative z-10 text-[10px] tracking-[0.3em] text-brand-secondary/60">
           Established MMXXIV
         </span>
 
         <div className="relative z-10 mt-auto max-w-lg">
-          <h2 className="text-5xl lg:text-6xl font-normal tracking-tight text-brand-secondary  leading-[0.95] font-serif">
-            Structure <br />
-            D <br />
-            Elegance.
+          <h2 className="text-5xl lg:text-6xl font-normal tracking-tight text-brand-secondary leading-[0.95] font-serif">
+            Structure & Elegance.
           </h2>
         </div>
       </div>
@@ -76,7 +79,6 @@ export default function SignInPage() {
       <div className="flex flex-col justify-between p-8 md:p-16 lg:p-24 bg-zinc-950/20">
         <div className="hidden md:block" />
 
-        {/* Shadcn Card base framing the form elements */}
         <Card className="w-full max-w-sm mx-auto bg-transparent ring-0 shadow-none rounded-none text-left space-y-10">
           <CardHeader className="p-0 space-y-2">
             <CardTitle className="text-3xl font-normal tracking-wide text-brand-secondary font-serif">
@@ -87,77 +89,60 @@ export default function SignInPage() {
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="p-0">
-            <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-              <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-[9px]  tracking-[0.25em] text-brand-primary/40 font-medium">
-                  Email Address
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <CardContent className="p-0 space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-[10px] tracking-[0.15em] uppercase text-brand-secondary/70">
+                  Email
                 </Label>
-                <Input 
+                <Input
                   id="email"
-                  type="email" 
-                  className="rounded-none bg-transparent border-0 border-b border-white/10 text-xs text-brand-secondary placeholder:text-brand-primary/20 focus-visible:ring-0 focus-visible:border-brand-secondary px-0 py-2 h-auto  tracking-wider transition-colors"
-                  placeholder="NAME@SHIFT.COM"
+                  type="email"
                   {...register("email", { required: "Email is required" })}
+                  className="rounded-none bg-transparent border-white/10 text-brand-secondary h-11"
                 />
-                {errors.email && <p className="text-[10px] text-red-400 tracking-wide">{errors.email.message}</p>}
+                {errors.email && (
+                  <p className="text-[10px] text-red-400">{errors.email.message}</p>
+                )}
               </div>
-              
-              <div className="space-y-1.5">
-                <div className="flex justify-between items-center">
-                  <Label htmlFor="password" className="text-[9px]  tracking-[0.25em] text-brand-primary/40 font-medium">
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className="text-[10px] tracking-[0.15em] uppercase text-brand-secondary/70">
                     Password
                   </Label>
-                  <Link href="#" className="text-[9px]  tracking-widest text-brand-primary/40 hover:text-brand-secondary transition-colors">
-                    Forgot?
+                  <Link href="/forgot-password" className="text-[10px] text-brand-secondary/50 hover:text-brand-secondary transition-colors">
+                    Forgot Password
                   </Link>
                 </div>
-                <Input 
+                <Input
                   id="password"
-                  type="password" 
-                  className="rounded-none bg-transparent border-0 border-b border-white/10 text-xs text-brand-secondary placeholder:text-brand-primary/20 focus-visible:ring-0 focus-visible:border-brand-secondary px-0 py-2 h-auto tracking-widest transition-colors"
-                  placeholder="••••••••"
+                  type="password"
                   {...register("password", { required: "Password is required" })}
+                  className="rounded-none bg-transparent border-white/10 text-brand-secondary h-11"
                 />
-                {errors.password && <p className="text-[10px] text-red-400 tracking-wide">{errors.password.message}</p>}
+                {errors.password && (
+                  <p className="text-[10px] text-red-400">{errors.password.message}</p>
+                )}
               </div>
+            </CardContent>
 
-              <Button type="submit" variant="secondary" className="w-full rounded-none bg-brand-secondary text-brand-neutral font-medium text-[10px]  tracking-[0.25em] py-6 hover:bg-brand-primary transition-colors cursor-pointer">
-                Authentication
+            <CardFooter className="p-0 flex flex-col gap-6 mt-8">
+              <Button
+                type="submit"
+                className="w-full rounded-none h-11 bg-brand-secondary text-brand-neutral hover:bg-white text-[11px] font-bold tracking-[0.18em] uppercase"
+              >
+                Sign In
               </Button>
-            </form>
-
-            <div className="space-y-4 mt-8">
-              <div className="relative flex items-center justify-center">
-                <div className="absolute w-full border-t border-white/5" />
-                <span className="relative bg-brand-neutral px-3 text-[8px]  tracking-[0.3em] text-brand-primary/30">
-                  Or continue with
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <Button variant="outline" className="rounded-none border-white/10 text-brand-secondary text-[9px]  tracking-[0.2em] bg-transparent hover:bg-white/5 py-5 transition-colors cursor-pointer">
-                  Identity
-                </Button>
-                <Button variant="outline" className="rounded-none border-white/10 text-brand-secondary text-[9px]  tracking-[0.2em] bg-transparent hover:bg-white/5 py-5 transition-colors cursor-pointer">
-                  Terminal
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-
-          <CardFooter className="p-0 pt-2 block">
-            <p className="text-[11px] text-brand-primary/40 tracking-wide text-center md:text-left">
-              New to the atelier?{' '}
-              <Link href="/signup" className="text-brand-secondary font-medium underline underline-offset-4 hover:text-brand-primary transition-colors">
-                Request access
-              </Link>
-            </p>
-          </CardFooter>
+              <p className="text-[11px] text-brand-secondary/50 text-center">
+                Don't have an account?{" "}
+                <Link href="/signup" className="text-brand-secondary hover:underline">
+                  Create one
+                </Link>
+              </p>
+            </CardFooter>
+          </form>
         </Card>
-
-        {/* Empty layout spacer for bottom alignment matching */}
-        <div className="hidden md:block" />
       </div>
     </main>
   );
