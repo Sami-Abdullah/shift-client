@@ -6,7 +6,7 @@ export default function ConstructionBanner() {
     <section className="relative w-full h-[60vh] md:h-[70vh] bg-brand-neutral overflow-hidden px-6 lg:px-12 py-4">
       <div className="relative w-full h-full border border-white/5">
         <Image
-          src="/images/construct.png"
+          src="/images/craft3.jpg"
           alt="The Architecture of Construction Process"
           fill
           className="object-cover object-center" // Original rich process lighting

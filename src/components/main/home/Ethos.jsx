@@ -7,7 +7,7 @@ export default function Ethos() {
       <div className="relative aspect-square w-full max-w-md mx-auto border border-white/5 p-2 bg-zinc-950/40">
         <div className="relative w-full h-full">
           <Image 
-            src="/images/p3.png"
+            src="/images/newe.jpg"
             alt="Material Architecture Detail" 
             fill
             className="object-cover" // True fabric color mapping
