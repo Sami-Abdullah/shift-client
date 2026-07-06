@@ -10,7 +10,6 @@ const MainLayout = ({ children }) => {
       <Navbar />
       {children}
       <Footer />
-      <AtelierChat />
     </div>
   );
 };

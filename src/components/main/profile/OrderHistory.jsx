@@ -1,59 +1,50 @@
 "use client";
+import Link from "next/link";
 
-import React from "react";
+const statusStyles = {
+  delivered:  "border-[rgba(74,222,128,0.2)] bg-[rgba(74,222,128,0.05)] text-[#4ade80]",
+  shipped:    "border-amber-500/20 bg-amber-500/5 text-amber-400",
+  processing: "border-[rgba(96,165,250,0.2)] bg-[rgba(96,165,250,0.05)] text-[#60a5fa]",
+  pending:    "border-border bg-muted text-brand-primary/50",
+  cancelled:  "border-red-500/20 bg-red-500/5 text-red-400",
+};
 
-const ORDERS = [
-  {
-    id: "FRM-90212",
-    date: "June 12, 2026",
-    status: "In Transit",
-    total: 1250.00,
-    items: "Column Overcoat (M) x1"
-  },
-  {
-    id: "FRM-89104",
-    date: "April 02, 2026",
-    status: "Delivered",
-    total: 225.00,
-    items: "Heavyweight Supima Tee (M) x2, Canvas Tote x1"
-  }
-];
-
-export default function OrderHistory() {
+export default function OrderHistory({ orders }) {
   return (
-    <div className="space-y-8 flex-1 w-full text-left">
-      <div className="border-b border-zinc-900 pb-4">
-        <h3 className="text-sm font-serif font-normal tracking-widest text-zinc-200 uppercase">
-          Acquisition Ledger
-        </h3>
+    <div className="border border-border bg-muted/20 p-8">
+      <div className="pb-5 mb-6 border-b border-border">
+        <p className="text-eyebrow mb-1">Order History</p>
+        <h2 className="text-heading" style={{ fontSize: "16px" }}>Your Orders</h2>
       </div>
 
-      <div className="space-y-4">
-        {ORDERS.map((order) => (
-          <div key={order.id} className="border border-zinc-900 bg-zinc-950 p-5 space-y-4 rounded-none flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="space-y-1">
-              <span className="text-[9px] uppercase tracking-widest text-zinc-500 font-mono">
-                {order.date}
-              </span>
-              <h4 className="text-xs font-serif text-zinc-200 tracking-wide uppercase">
-                {order.id}
-              </h4>
-              <p className="text-[11px] text-zinc-400 font-sans tracking-wide">
-                {order.items}
+      {orders.length === 0 && <p className="text-body text-muted-foreground">No orders yet.</p>}
+
+      <div className="space-y-3">
+        {orders.map((order) => (
+          <Link
+            key={order._id}
+            href={`/profile/orders/${order._id}`}
+            className="flex items-center justify-between gap-6 border border-border bg-brand-neutral p-5 hover:border-brand-primary/30 transition-colors"
+          >
+            <div className="space-y-1.5 min-w-0">
+              <p className="text-caption">
+                {order.createdAt
+                  ? new Date(order.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" })
+                  : "—"}
+              </p>
+              <p className="text-data-mono">#{order._id.slice(-8).toUpperCase()}</p>
+              <p className="text-body truncate" style={{ fontSize: "11px" }}>
+                {order.items.map((i) => `${i.name} (${i.size}) x${i.quantity}`).join(", ")}
               </p>
             </div>
-            
-            <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 border-t sm:border-t-0 border-zinc-900 pt-3 sm:pt-0">
-              <span className="text-xs text-zinc-300 font-sans">${order.total.toFixed(2)}</span>
-              <span className={`text-[9px] uppercase tracking-[0.15em] px-2 py-0.5 rounded-none border ${
-                order.status === "In Transit" 
-                  ? "border-amber-500/20 bg-amber-500/5 text-amber-400" 
-                  : "border-zinc-800 bg-zinc-900 text-zinc-400"
-              }`}>
+
+            <div className="flex flex-col items-end gap-2 shrink-0">
+              <p className="text-heading" style={{ fontSize: "16px" }}>${order.total.toFixed(2)}</p>
+              <span className={`text-label px-2 py-0.5 border ${statusStyles[order.status]}`}>
                 {order.status}
               </span>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

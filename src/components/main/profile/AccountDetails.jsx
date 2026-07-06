@@ -1,54 +1,76 @@
 "use client";
-
 import React from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { updateProfile } from "@/lib/actions/customer/profile";
 
-export default function AccountDetails() {
-  const { register, handleSubmit } = useForm({
+export default function AccountDetails({ user }) {
+  const { register, handleSubmit, formState: { isSubmitting, isDirty } } = useForm({
     defaultValues: {
-      name: "Sami Abdullah",
-      email: "sami@example.com",
-      phone: "+880 1234-567890",
-      city: "Dhaka",
+      name: user?.name || "",
+      phone: user?.phone || "",
+      address: user?.address || "",
     },
   });
 
-  const onUpdate = (data) => console.log("Updating Archive:", data);
+  const onUpdate = async (data) => {
+    try {
+      await updateProfile(data);
+      toast.success("Profile updated");
+    } catch (err) {
+      toast.error(err.message || "Failed to update profile");
+    }
+  };
+
+  const fieldClass =
+    "rounded-none bg-transparent border border-border text-data focus-visible:ring-0 focus-visible:border-brand-primary/40 h-10 px-3";
 
   return (
-    <div className="space-y-8 flex-1 w-full text-left">
-      <div className="border-b border-zinc-900 pb-4">
-        <h3 className="text-sm font-serif font-normal tracking-widest text-zinc-200 uppercase">
-          Account Registry
-        </h3>
+    <div className="border border-border bg-muted/20 p-8">
+      <div className="flex items-center justify-between pb-5 mb-6 border-b border-border">
+        <div>
+          <p className="text-eyebrow mb-1">Personal Details</p>
+          <h2 className="text-heading" style={{ fontSize: "16px" }}>Account Information</h2>
+        </div>
+        {isDirty && <span className="text-label text-amber-400/80">Unsaved changes</span>}
       </div>
 
-      <form onSubmit={handleSubmit(onUpdate)} className="space-y-6 max-w-xl">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div className="space-y-1.5">
-            <Label className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-medium">Full Name</Label>
-            <Input {...register("name")} className="rounded-none bg-transparent border-0 border-b border-zinc-800 text-xs text-zinc-200 focus-visible:ring-0 focus-visible:border-zinc-400 px-0 py-2 h-auto uppercase tracking-wider" />
+      <form onSubmit={handleSubmit(onUpdate)} className="space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className="space-y-2">
+            <Label className="text-label">Full Name</Label>
+            <Input {...register("name")} className={fieldClass} />
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-medium">Email Address</Label>
-            <Input type="email" {...register("email")} className="rounded-none bg-transparent border-0 border-b border-zinc-800 text-xs text-zinc-200 focus-visible:ring-0 focus-visible:border-zinc-400 px-0 py-2 h-auto uppercase tracking-wider" />
+
+          <div className="space-y-2">
+            <Label className="text-label">Email Address</Label>
+            <Input value={user?.email || ""} disabled className={`${fieldClass} opacity-40 cursor-not-allowed`} />
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-medium">Contact Context</Label>
-            <Input {...register("phone")} className="rounded-none bg-transparent border-0 border-b border-zinc-800 text-xs text-zinc-200 focus-visible:ring-0 focus-visible:border-zinc-400 px-0 py-2 h-auto tracking-wider" />
+
+          <div className="space-y-2">
+            <Label className="text-label">Phone</Label>
+            <Input {...register("phone")} placeholder="Not set" className={fieldClass} />
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-[9px] uppercase tracking-[0.25em] text-zinc-500 font-medium">Region Hub</Label>
-            <Input {...register("city")} className="rounded-none bg-transparent border-0 border-b border-zinc-800 text-xs text-zinc-200 focus-visible:ring-0 focus-visible:border-zinc-400 px-0 py-2 h-auto uppercase tracking-wider" />
+
+          <div className="space-y-2">
+            <Label className="text-label">Address</Label>
+            <Input {...register("address")} placeholder="Not set" className={fieldClass} />
           </div>
         </div>
 
-        <Button type="submit" className="rounded-none bg-zinc-100 text-zinc-950 font-medium text-[10px] uppercase tracking-[0.25em] py-5 px-8 hover:bg-white transition-colors cursor-pointer pt-3">
-          Commit Changes
-        </Button>
+        <div className="flex items-center justify-between pt-6 border-t border-border">
+          <p className="text-caption">Email address cannot be changed here</p>
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="rounded-none bg-brand-secondary text-brand-neutral text-[9px] font-bold tracking-[0.18em] uppercase px-6 py-2.5 h-auto hover:bg-white transition-colors disabled:opacity-50"
+          >
+            {isSubmitting ? "Saving..." : "Save Changes"}
+          </Button>
+        </div>
       </form>
     </div>
   );

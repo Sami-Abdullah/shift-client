@@ -1,10 +1,10 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { Button } from "@/components/ui/button";
-import { Search, ShoppingBag } from 'lucide-react';
+import { Search, ShoppingBag, User } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 
 export default function Navbar() {
@@ -12,17 +12,43 @@ export default function Navbar() {
   const user = session?.user ?? null;
   const pathname = usePathname();
   const router = useRouter();
+  const [cartCount, setCartCount] = useState(0);
 
   const isActive = (path) => pathname === path;
 
   const navLinks = [
     { name: 'Collections', href: '/collections' },
-    { name: 'Archives', href: '/archives' },
-    { name: 'Atelier', href: '/atelier' },
-    { name: 'Objects', href: '/objects' },
+
     { name: 'Sign In', href: '/signin' },
     { name: 'Sign Up', href: '/signup' },
   ];
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadCartCount() {
+      if (!user) {
+        if (!cancelled) setCartCount(0);
+        return;
+      }
+
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/cart`, {
+          credentials: "include",
+        });
+        const data = await res.json();
+        if (!cancelled) setCartCount(data?.cart?.itemCount || 0);
+      } catch {
+        if (!cancelled) setCartCount(0);
+      }
+    }
+
+    loadCartCount();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user, pathname]);
 
   const handleSignOut = async () => {
     await authClient.signOut({
@@ -34,8 +60,6 @@ export default function Navbar() {
     });
   };
 
-  // While session is loading show a neutral navbar
-  // No flash, no layout shift — just nothing in the auth area
   if (isPending) {
     return (
       <nav className="sticky top-0 z-50 h-14 w-full border-b border-white/5 bg-brand-neutral text-brand-secondary px-6 lg:px-12 flex items-center justify-between">
@@ -45,9 +69,7 @@ export default function Navbar() {
           </Link>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-brand-secondary hover:bg-white/5 hover:text-white rounded-full cursor-pointer">
-            <Search className="w-3.5 h-3.5 stroke-[1.25]" />
-          </Button>
+
           <Button variant="ghost" size="icon" className="h-8 w-8 text-brand-secondary hover:bg-white/5 hover:text-white rounded-full cursor-pointer">
             <ShoppingBag className="w-3.5 h-3.5 stroke-[1.25]" />
           </Button>
@@ -58,14 +80,12 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 h-14 w-full border-b border-white/5 bg-brand-neutral text-brand-secondary px-6 lg:px-12 flex items-center justify-between">
-      {/* Brand */}
       <div className="flex items-center">
         <Link href="/" className="text-sm font-medium tracking-[0.25em] uppercase text-brand-secondary font-serif">
           FERRUM
         </Link>
       </div>
 
-      {/* Nav links */}
       <div className="hidden md:flex gap-8 justify-center items-center h-full">
         {navLinks.map((link) => {
           if (user && (link.href === '/signin' || link.href === '/signup')) {
@@ -100,19 +120,32 @@ export default function Navbar() {
         )}
       </div>
 
-      {/* Utilities */}
       <div className="flex items-center gap-3">
         {user && (
           <p className="hidden sm:block text-[10px] font-medium uppercase tracking-[0.15em] text-brand-primary/60 mr-1">
             Hello, {user.name?.split(' ')[0] || 'there'}
           </p>
         )}
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-brand-secondary hover:bg-white/5 hover:text-white rounded-full cursor-pointer">
-          <Search className="w-3.5 h-3.5 stroke-[1.25]" />
-        </Button>
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-brand-secondary hover:bg-white/5 hover:text-white rounded-full cursor-pointer">
-          <ShoppingBag className="w-3.5 h-3.5 stroke-[1.25]" />
-        </Button>
+
+
+        {user && (
+          <Link href="/profile">
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-brand-secondary hover:bg-white/5 hover:text-white rounded-full cursor-pointer">
+              <User className="w-3.5 h-3.5 stroke-[1.25]" />
+            </Button>
+          </Link>
+        )}
+
+        <Link href="/cart" className="relative">
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-brand-secondary hover:bg-white/5 hover:text-white rounded-full cursor-pointer">
+            <ShoppingBag className="w-3.5 h-3.5 stroke-[1.25]" />
+          </Button>
+          {cartCount > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-brand-secondary text-brand-neutral text-[8px] font-bold flex items-center justify-center rounded-full">
+              {cartCount}
+            </span>
+          )}
+        </Link>
       </div>
     </nav>
   );

@@ -1,27 +1,46 @@
-import React from "react";
-
 import ProductSuggestion from "@/components/main/pdp/ProductSuggestion";
-import ProductSpecs from "@/components/main/pdp/ProductSpecs";
-import ProductFeatures from "@/components/main/pdp/ProductFeatures";
 import ProductHero from "@/components/main/pdp/ProductHero";
+import { getProductById, getRelatedProducts } from "@/lib/api/customer/products";
+import { getWishlist } from "@/lib/api/customer/wishlist";
 
+export default async function ProductDetailPage({ params }) {
+  const { id } = await params;
 
-const ProductDetailPage=({params})=> {
+  let product = null;
+  try {
+    const data = await getProductById(id);
+    product = data.product;
+  } catch {
+    product = null;
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen w-full bg-brand-neutral text-brand-secondary flex items-center justify-center">
+        <p className="text-body text-muted-foreground">Product not found.</p>
+      </div>
+    );
+  }
+
+  let isWishlisted = false;
+  try {
+    const wishlistData = await getWishlist();
+    isWishlisted = wishlistData.wishlist.some((p) => p._id === product._id);
+  } catch {
+    isWishlisted = false;
+  }
+
+  let relatedProducts = [];
+  try {
+    relatedProducts = await getRelatedProducts(product.category, product._id);
+  } catch {
+    relatedProducts = [];
+  }
+
   return (
-    <div className="min-h-screen w-full bg-zinc-950 text-zinc-100 selection:bg-zinc-100 selection:text-zinc-950">
-      {/* 1. Hero Block View */}
-      <ProductHero />
-
-      {/* 2. Asymmetric Lookbook Callout Features Grid */}
-      <ProductFeatures />
-
-      {/* 3. Deep Architectural Technical Description */}
-      <ProductSpecs />
-
-      {/* 4. Cross-Sell Look Ecosystem Grid */}
-      <ProductSuggestion />
+    <div className="min-h-screen w-full bg-brand-neutral text-brand-secondary selection:bg-brand-secondary selection:text-brand-neutral">
+      <ProductHero product={product} initialWishlisted={isWishlisted} />
+      {relatedProducts.length > 0 && <ProductSuggestion products={relatedProducts} />}
     </div>
   );
 }
-
-export default ProductSuggestion

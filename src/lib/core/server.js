@@ -18,7 +18,9 @@ export async function serverFetch(path, options = {}) {
   const data = await res.json();
 
   if (!data.success) {
-    throw new Error(data.message || "Request failed");
+    const error = new Error(data.message || "Request failed");
+    error.status = res.status;
+    throw error;
   }
 
   return data;
