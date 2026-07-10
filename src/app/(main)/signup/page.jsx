@@ -31,25 +31,37 @@ export default function SignUpPage() {
   const [step, setStep] = useState("form"); // "form" | "verify"
   const [registeredEmail, setRegisteredEmail] = useState("");
 
-  const onSubmit = async (data) => {
+const onSubmit = async (data) => {
+  try {
     const { data: res, error } = await authClient.signUp.email({
       email: data.email,
       password: data.password,
       name: data.fullname,
     });
 
+    if (error) {
+      toast.error(error.message || "Failed to create account");
+      return;
+    }
+
     if (res) {
-      await authClient.emailOtp.sendVerificationOtp({
+      const otpResult = await authClient.emailOtp.sendVerificationOtp({
         email: data.email,
         type: "email-verification",
       });
+
+      if (otpResult.error) {
+        console.error("OTP send error:", otpResult.error);
+      }
+
       setRegisteredEmail(data.email);
       setStep("verify");
-    } else {
-      toast.error(error?.message || "Failed to create account");
     }
-  };
-
+  } catch (err) {
+    console.error("Signup error:", err);
+    toast.error("Something went wrong. Please try again.");
+  }
+};
   return (
     <main className="min-h-screen w-full bg-brand-neutral grid grid-cols-1 md:grid-cols-2">
       <div className="relative hidden md:flex flex-col justify-between p-12 overflow-hidden border-r border-white/5 grayscale">
