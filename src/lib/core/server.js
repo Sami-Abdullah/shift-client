@@ -1,11 +1,12 @@
 import { headers } from "next/headers";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-
 export async function serverFetch(path, options = {}) {
   const cookie = (await headers()).get("cookie") || "";
+  const host = (await headers()).get("host");
+  const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
+  const baseUrl = `${protocol}://${host}`;
 
-  const res = await fetch(`${baseUrl}${path}`, {
+  const res = await fetch(`${baseUrl}${process.env.NEXT_PUBLIC_API_URL}${path}`, {
     ...options,
     headers: {
       ...(options.body ? { "Content-Type": "application/json" } : {}),

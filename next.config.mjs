@@ -7,6 +7,14 @@ const nextConfig = {
       bodySizeLimit: "10mb",
     },
   },
+  async rewrites() {
+    return [
+      {
+        source: '/backend/:path*',
+        destination: 'https://ferrum-server.onrender.com/:path*',
+      },
+    ];
+  },
 };
 
-export default nextConfig;
+export default nextConfig; 
