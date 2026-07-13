@@ -26,38 +26,50 @@ export default function ProductHero({ product, initialWishlisted }) {
     }
 
     startTransition(async () => {
-      try {
-        await addToCart(product._id, selectedSize, 1);
-        toast.success("Added to bag");
-      } catch (err) {
-        if (err.status === 401) {
-          toast.info("Please sign in to add items to your bag");
-          router.push("/signin");
-        } else {
-          toast.error(err.message || "Failed to add to bag");
-        }
+      const result = await addToCart(product._id, selectedSize, 1);
+
+      if (result?.requiresAuth) {
+        toast.info("Please sign in to add items to your bag");
+        router.push("/signin");
+        return;
       }
+
+      if (!result?.success) {
+        toast.error(result?.message || "Failed to add to bag");
+        return;
+      }
+
+      toast.success("Added to bag");
     });
   };
 
   const handleToggleWishlist = () => {
     startWishlistTransition(async () => {
-      try {
-        if (wishlisted) {
-          await removeFromWishlist(product._id);
+      if (wishlisted) {
+        const result = await removeFromWishlist(product._id);
+        if (result?.requiresAuth) {
+          toast.info("Please sign in to save items");
+          router.push("/signin");
+          return;
+        }
+        if (result?.success) {
           setWishlisted(false);
           toast.success("Removed from saved items");
         } else {
-          await addToWishlist(product._id);
-          setWishlisted(true);
-          toast.success("Saved to your items");
+          toast.error(result?.message || "Failed to update saved items");
         }
-      } catch (err) {
-        if (err.status === 401) {
+      } else {
+        const result = await addToWishlist(product._id);
+        if (result?.requiresAuth) {
           toast.info("Please sign in to save items");
           router.push("/signin");
+          return;
+        }
+        if (result?.success) {
+          setWishlisted(true);
+          toast.success("Saved to your items");
         } else {
-          toast.error(err.message || "Failed to update saved items");
+          toast.error(result?.message || "Failed to update saved items");
         }
       }
     });
