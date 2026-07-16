@@ -29,7 +29,8 @@ export default function SignInPage() {
   const [needsVerification, setNeedsVerification] = useState(false);
   const [pendingEmail, setPendingEmail] = useState("");
 
-  const onSubmit = async (data) => {
+const onSubmit = async (data) => {
+  try {
     const { data: res, error } = await authClient.signIn.email({
       email: data.email,
       password: data.password,
@@ -52,8 +53,11 @@ export default function SignInPage() {
         toast.error(error?.message || "Invalid email or password");
       }
     }
-  };
-
+  } catch (err) {
+    console.error("Sign in error:", err);
+    toast.error("Something went wrong. Please try again.");
+  }
+};
   return (
     <main className="min-h-screen w-full bg-brand-neutral grid grid-cols-1 md:grid-cols-2">
       <div className="relative hidden md:flex flex-col justify-between p-12 overflow-hidden border-r border-white/5">
